@@ -21,7 +21,7 @@ jobs:
     steps:
       # setup nix and cachix environment
       - uses: actions/checkout@v2
-      - uses: cachix/install-nix-action@v13
+      - uses: cachix/install-nix-action@v16
       - uses: cachix/cachix-action@v10
         with:
           name: emacs-osx
