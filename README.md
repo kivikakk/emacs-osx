@@ -45,7 +45,7 @@ nix-env -iA cachix -f https://cachix.org/api/v1/install
 cachix use nequissimus
 
 # `emacsOsxNative` can be substituted with any variant (mentioned above)
-nix-env -iA emacsOsxNative -f https://github.com/sagittaros/emacs-osx/archive/refs/tags/built.tar.gz
+nix-env -iA emacsOsxNative -f https://github.com/nequissimus/emacs-osx/archive/refs/tags/built.tar.gz
 ```
 
 #### Copy to /Applications
