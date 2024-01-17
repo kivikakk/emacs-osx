@@ -1,6 +1,4 @@
-let
-  pkgs = import ./pkgs.nix;
-
+{pkgs}: let
   # I am using the "builder" from nix-community's emacs-overlay, with some slight modifications
   # https://github.com/nix-community/emacs-overlay/blob/d1fbf6d39f3a0869c5fb0cc7f9ba7c9033e35cf9/default.nix#L25
   mkGitEmacs = namePrefix: jsonFile: patches: {...} @ args: let
@@ -42,7 +40,7 @@ let
     mkGitEmacs "emacs-osx" ./emacs-source/emacs-master.json [
       ./patches/codesign.patch
     ] {
-      nativeComp = true;
+      withNativeCompilation = true;
     };
 
   emacsOsxTile = mkGitEmacs "emacs-osx" ./emacs-source/emacs-master.json [
@@ -53,7 +51,7 @@ let
   emacsOsxNativeTile = mkGitEmacs "emacs-osx" ./emacs-source/emacs-master.json [
     ./patches/codesign.patch
     ./patches/fix-window-role-yabai.patch
-  ] {nativeComp = true;};
+  ] {withNativeCompilation = true;};
 in
   _: _: {
     inherit emacsOsx;
