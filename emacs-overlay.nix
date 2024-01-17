@@ -15,13 +15,13 @@
 
       # in order for this build to be differentiated from original `nixpkgs.emacs`
       (drv:
-        drv.overrideAttrs (old: {
+        drv.overrideAttrs (prev: {
           name = "${namePrefix}-${repoMeta.version}";
           inherit (repoMeta) version;
-          inherit patches;
+          patches = prev.patches ++ patches;
           src = fetcher (builtins.removeAttrs repoMeta ["type" "version"]);
           postPatch =
-            old.postPatch
+            prev.postPatch
             + ''
               substituteInPlace lisp/loadup.el \
               --replace '(emacs-repository-get-version)' '"${repoMeta.rev}"' \
