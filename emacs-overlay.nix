@@ -1,7 +1,11 @@
 {pkgs}: let
-  # I am using the "builder" from nix-community's emacs-overlay, with some slight modifications
-  # https://github.com/nix-community/emacs-overlay/blob/d1fbf6d39f3a0869c5fb0cc7f9ba7c9033e35cf9/default.nix#L25
-  mkGitEmacs = namePrefix: jsonFile: patches: {...} @ args: let
+  inherit (pkgs) lib stdenv libgccjit;
+
+  # Original comment:
+  # # I am using the "builder" from nix-community's emacs-overlay, with some slight modifications
+  # # https://github.com/nix-community/emacs-overlay/blob/d1fbf6d39f3a0869c5fb0cc7f9ba7c9033e35cf9/default.nix#L25
+  # I've continued to mess with it.
+  mkGitEmacs = namePrefix: jsonFile: patches: {withNativeCompilation ? false, ...} @ args: let
     repoMeta = pkgs.lib.importJSON jsonFile;
     fetcher =
       if repoMeta.type == "savannah"
@@ -18,7 +22,30 @@
         drv.overrideAttrs (prev: {
           name = "${namePrefix}-${repoMeta.version}";
           inherit (repoMeta) version;
-          patches = prev.patches ++ patches;
+          patches =
+            patches
+            ++ lib.optionals withNativeCompilation [
+              (pkgs.substituteAll {
+                src = ./patches/native-comp-driver-options.patch;
+                backendPath =
+                  lib.concatStringsSep " "
+                  (builtins.map (x: ''"-B${x}"'') ([
+                      # Paths necessary so the JIT compiler finds its libraries:
+                      "${lib.getLib libgccjit}/lib"
+                      "${lib.getLib libgccjit}/lib/gcc"
+                      "${lib.getLib stdenv.cc.libc}/lib"
+                    ]
+                    ++ lib.optionals (stdenv.cc ? cc.libgcc) [
+                      "${lib.getLib stdenv.cc.cc.libgcc}/lib"
+                    ]
+                    ++ [
+                      # Executable paths necessary for compilation (ld, as):
+                      "${lib.getBin stdenv.cc.cc}/bin"
+                      "${lib.getBin stdenv.cc.bintools}/bin"
+                      "${lib.getBin stdenv.cc.bintools.bintools}/bin"
+                    ]));
+              })
+            ];
           src = fetcher (builtins.removeAttrs repoMeta ["type" "version"]);
           postPatch =
             prev.postPatch
