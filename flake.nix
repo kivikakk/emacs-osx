@@ -18,13 +18,15 @@
       formatter = pkgs.alejandra;
 
       packages = {
-        inherit
-          (pkgs)
-          emacsOsx
-          emacsOsxNative
-          emacsOsxTile
-          emacsOsxNativeTile
-          ;
+        emacsOsxMaster = pkgs.emacsOsx.master.interp.default;
+        emacsOsxNativeMaster = pkgs.emacsOsx.master.native.default;
+        emacsOsxTileMaster = pkgs.emacsOsx.master.interp.tile;
+        emacsOsxTileNativeMaster = pkgs.emacsOsx.master.native.tile;
+
+        emacsOsxRelease = pkgs.emacsOsx.release.interp.default;
+        emacsOsxNativeRelease = pkgs.emacsOsx.release.native.default;
+        emacsOsxTileRelease = pkgs.emacsOsx.release.interp.tile;
+        emacsOsxTileNativeRelease = pkgs.emacsOsx.release.native.tile;
       };
     });
 }

@@ -59,32 +59,33 @@
         }))
     ];
 
-  emacsOsx = mkGitEmacs "emacs-osx" ./emacs-source/emacs-master.json [
-    ./patches/codesign.patch
-  ] {};
-
-  emacsOsxNative =
-    mkGitEmacs "emacs-osx" ./emacs-source/emacs-master.json [
+  mkVersionSet = jsonFile: {
+    interp.default = mkGitEmacs "emacs-osx" ./emacs-source/emacs-master.json [
       ./patches/codesign.patch
-    ] {
-      withNativeCompilation = true;
-    };
+    ] {};
 
-  emacsOsxTile = mkGitEmacs "emacs-osx" ./emacs-source/emacs-master.json [
-    ./patches/codesign.patch
-    ./patches/fix-window-role-yabai.patch
-  ] {};
-
-  emacsOsxNativeTile = mkGitEmacs "emacs-osx" ./emacs-source/emacs-master.json [
-    ./patches/codesign.patch
-    ./patches/fix-window-role-yabai.patch
-  ] {withNativeCompilation = true;};
-in
-  _: _: {
-    inherit emacsOsx;
-    inherit emacsOsxNative;
+    native.default =
+      mkGitEmacs "emacs-osx" ./emacs-source/emacs-master.json [
+        ./patches/codesign.patch
+      ] {
+        withNativeCompilation = true;
+      };
 
     # for use in chunwm or yabai
-    inherit emacsOsxTile;
-    inherit emacsOsxNativeTile;
+    interp.tile = mkGitEmacs "emacs-osx" ./emacs-source/emacs-master.json [
+      ./patches/codesign.patch
+      ./patches/fix-window-role-yabai.patch
+    ] {};
+
+    native.tile = mkGitEmacs "emacs-osx" ./emacs-source/emacs-master.json [
+      ./patches/codesign.patch
+      ./patches/fix-window-role-yabai.patch
+    ] {withNativeCompilation = true;};
+  };
+in
+  _: _: {
+    emacsOsx = {
+      master = mkVersionSet ./emacs-source/emacs-master.json;
+      release = mkVersionSet ./emacs-source/emacs-release.json;
+    };
   }
