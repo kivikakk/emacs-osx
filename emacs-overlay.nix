@@ -5,7 +5,7 @@
   # # I am using the "builder" from nix-community's emacs-overlay, with some slight modifications
   # # https://github.com/nix-community/emacs-overlay/blob/d1fbf6d39f3a0869c5fb0cc7f9ba7c9033e35cf9/default.nix#L25
   # I've continued to mess with it.
-  mkGitEmacs = namePrefix: jsonFile: patches: {withNativeCompilation ? false, ...} @ args': let
+  mkGitEmacs = (namePrefix: jsonFile: patches: {withNativeCompilation ? false, ...} @ args': let
     repoMeta = pkgs.lib.importJSON jsonFile;
     fetcher =
       if repoMeta.type == "savannah"
@@ -13,9 +13,10 @@
       else if repoMeta.type == "github"
       then pkgs.fetchFromGitHub
       else throw "Unknown repository type ${repoMeta.type}!";
-    args = if withNativeCompilation != false
-           then args' // { withNativeCompilation = true; }
-           else args';
+    args =
+      if withNativeCompilation != false
+      then args' // {withNativeCompilation = true;}
+      else args';
   in
     builtins.foldl' (drv: fn: fn drv) pkgs.emacs [
       (drv: drv.override ({srcRepo = true;} // args))
@@ -60,27 +61,24 @@
           # https://github.com/NixOS/nixpkgs/issues/109997#issuecomment-867318377
           CFLAGS = "-DMAC_OS_X_VERSION_MAX_ALLOWED=110200 -g -O2";
         }))
-    ];
+    ]) "emacs-osx";
 
   mkVersionSet = jsonFile: nativeCompPatch: {
-    interp.default = mkGitEmacs "emacs-osx" jsonFile [
+    interp.default = mkGitEmacs jsonFile [
       ./patches/codesign.patch
     ] {};
 
-    native.default =
-      mkGitEmacs "emacs-osx" jsonFile [
-        ./patches/codesign.patch
-      ] {
-        withNativeCompilation = nativeCompPatch;
-      };
+    native.default = mkGitEmacs jsonFile [
+      ./patches/codesign.patch
+    ] {withNativeCompilation = nativeCompPatch;};
 
     # for use in chunwm or yabai
-    interp.tile = mkGitEmacs "emacs-osx" jsonFile [
+    interp.tile = mkGitEmacs jsonFile [
       ./patches/codesign.patch
       ./patches/fix-window-role-yabai.patch
     ] {};
 
-    native.tile = mkGitEmacs "emacs-osx" jsonFile [
+    native.tile = mkGitEmacs jsonFile [
       ./patches/codesign.patch
       ./patches/fix-window-role-yabai.patch
     ] {withNativeCompilation = nativeCompPatch;};

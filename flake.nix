@@ -1,6 +1,11 @@
 {
   description = "emacs-osx";
 
+  inputs = {
+    nixpkgs.url = github:NixOS/nixpkgs/nixos-23.11;
+    flake-utils.url = github:numtide/flake-utils;
+  };
+
   outputs = inputs @ {
     self,
     nixpkgs,
@@ -19,14 +24,14 @@
 
       packages = {
         emacsOsxMaster = pkgs.emacsOsx.master.interp.default;
-        emacsOsxNativeMaster = pkgs.emacsOsx.master.native.default;
-        emacsOsxTileMaster = pkgs.emacsOsx.master.interp.tile;
-        emacsOsxTileNativeMaster = pkgs.emacsOsx.master.native.tile;
+        emacsOsxMasterTile = pkgs.emacsOsx.master.interp.tile;
+        emacsOsxMasterNative = pkgs.emacsOsx.master.native.default;
+        emacsOsxMasterNativeTile = pkgs.emacsOsx.master.native.tile;
 
         emacsOsxRelease = pkgs.emacsOsx.release.interp.default;
-        emacsOsxNativeRelease = pkgs.emacsOsx.release.native.default;
-        emacsOsxTileRelease = pkgs.emacsOsx.release.interp.tile;
-        emacsOsxTileNativeRelease = pkgs.emacsOsx.release.native.tile;
+        emacsOsxReleaseTile = pkgs.emacsOsx.release.interp.tile;
+        emacsOsxReleaseNative = pkgs.emacsOsx.release.native.default;
+        emacsOsxReleaseNativeTile = pkgs.emacsOsx.release.native.tile;
       };
     });
 }
