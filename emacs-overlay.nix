@@ -60,24 +60,24 @@
     ];
 
   mkVersionSet = jsonFile: {
-    interp.default = mkGitEmacs "emacs-osx" ./emacs-source/emacs-master.json [
+    interp.default = mkGitEmacs "emacs-osx" jsonFile [
       ./patches/codesign.patch
     ] {};
 
     native.default =
-      mkGitEmacs "emacs-osx" ./emacs-source/emacs-master.json [
+      mkGitEmacs "emacs-osx" jsonFile [
         ./patches/codesign.patch
       ] {
         withNativeCompilation = true;
       };
 
     # for use in chunwm or yabai
-    interp.tile = mkGitEmacs "emacs-osx" ./emacs-source/emacs-master.json [
+    interp.tile = mkGitEmacs "emacs-osx" jsonFile [
       ./patches/codesign.patch
       ./patches/fix-window-role-yabai.patch
     ] {};
 
-    native.tile = mkGitEmacs "emacs-osx" ./emacs-source/emacs-master.json [
+    native.tile = mkGitEmacs "emacs-osx" jsonFile [
       ./patches/codesign.patch
       ./patches/fix-window-role-yabai.patch
     ] {withNativeCompilation = true;};
